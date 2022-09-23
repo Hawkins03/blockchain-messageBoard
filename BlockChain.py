@@ -30,8 +30,8 @@ class BlockChain:
 
         self.new_block("", proof=100, prev_hash='1')
 
-    def getChain():
-        return chain
+    def getChain(self):
+        return self.chain
 
     def register_node(self, address, pubkey):
         """
@@ -51,7 +51,6 @@ class BlockChain:
         return
 
     def new_block(self, message, proof = None, prev_hash = None):
-        print("creating new block")
         """
         creates a new block and adds it to the chain (as well as gives it to you)
 
@@ -61,7 +60,7 @@ class BlockChain:
         :return: <dict> the block to be added to the chain (note, it is added to the chain by the function as well)
         """
         if (not proof):
-            proof = proof_of_work(self.chain[-1])
+            proof = self.proof_of_work(self.chain[-1])
         if (not prev_hash):
             prev_hash = self.hash(self.chain[-1])
         block = {
@@ -135,7 +134,7 @@ class BlockChain:
         :param chain: <list> new blockchian to be checked
         """
         # counting backwards because it's more likely that a problem will be with anything new
-        for i in range(len(chain), 1, -1):
+        for i in range(len(chain) - 1, 1, -1):
             last_block = chain[i - 1]
             block = chain[i]
             print(f'{last_block}')
@@ -174,7 +173,7 @@ class BlockChain:
         :return: <bool> true if the guess hash is signed (4 leading 0's)
         '''
         guess = f'{lastProof}{proof}{lastHash}'.encode()
-        guessHash = SHA1.new(guess).hexdigest()
+        guessHash = SHA256.new(guess).hexdigest()
         return guessHash[:4] == "0000"
 
     def proof_of_work(self, lastBlock):
@@ -200,5 +199,4 @@ class BlockChain:
         :param block: <dict> the block to collect a hash for
         :return: <:class: SHA256Hash> the hash of the message
         """
-        block_str = json.dumps(block, sort_keys=True)
-        return SHA256.new(block_str.encode('ascii'))
+        return SHA256.new(f"{block}".encode('ascii'))
