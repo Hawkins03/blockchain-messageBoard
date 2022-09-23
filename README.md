@@ -1,7 +1,7 @@
 # Blockchain Message Board
 ## How does a Blockchain work?
 First we have to understand a few things:
-1. A hash: Pretty much a "signature" of a bit of text. Each bit of text has it's own hash, and vice versa.
+1. A hash: Pretty much a "signature" of a bitstring. Each bitstring has it's own hash, and vice versa.
   a. A signed hash: if a hash starts with 4 leading 0's (this is manipulated by a number called a nonce)
 2. Pub/priv key encryption: Each public / private key can encrypt a message sent by the other. In this case, we're encrypting using the private key so that others can validate the message using our public key. (Never give out your private key)
 3. What is a block: A block is a Object / data type and for each block, it has 4 things.
