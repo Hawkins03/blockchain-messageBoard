@@ -46,8 +46,10 @@ class BlockChain:
             self.nodes.add(parsedUrl.path)
         else:
             raise ValueError('Invalid URL')
+        return
 
-    def new_block(self, message, proof = proof_of_work(self.cipher[-1]), prev_hash = self.hash(self.chain[-1])):
+
+    def new_block(self, message, proof = None, prev_hash = None):
         """
         creates a new block and adds it to the chain (as well as gives it to you)
 
@@ -56,6 +58,10 @@ class BlockChain:
         :param prev_hash: <hash> the hash of the previous block in the chain
         :return: <dict> the block to be added to the chain (note, it is added to the chain by the function as well)
         """
+        if (not proof):
+            proof = proof_of_work(self.chain[-1])
+        if (not prev_hash):
+            prev_hash = self.hash(self.chain[-1])
         block = {
             'pubkey': self.pubkey,
             'index': len(self.chain) + 1,
