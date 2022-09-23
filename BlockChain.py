@@ -1,9 +1,8 @@
-import os
-import socket
 import json
 import Crypto
 import requests
 from time import time
+from base64 import b64decode, b64encode
 from urllib.parse import urlparse
 from Crypto.PublicKey import RSA
 from Crypto.Hash import SHA256
@@ -21,15 +20,18 @@ class BlockChain:
 
         """
 
-        self.cipher = pkcs1_15.PKCS115_SigScheme.new(key)
-        if (not cipher.can_sign()):
+        self.cipher = pkcs1_15.PKCS115_SigScheme(key)
+        if (not self.cipher.can_sign()):
             return ValueError("key must be a private key / able to sign messages")
 
         self.pubkey = key.public_key()
         self.chain = []
         self.nodes = set()
 
-        self.new_block(message="", previous_hash='1', proof=100)
+        self.new_block("", proof=100, prev_hash='1')
+
+    def getChain():
+        return chain
 
     def register_node(self, address, pubkey):
         """
@@ -48,8 +50,8 @@ class BlockChain:
             raise ValueError('Invalid URL')
         return
 
-
     def new_block(self, message, proof = None, prev_hash = None):
+        print("creating new block")
         """
         creates a new block and adds it to the chain (as well as gives it to you)
 
@@ -66,10 +68,10 @@ class BlockChain:
             'pubkey': self.pubkey,
             'index': len(self.chain) + 1,
             'timestamp': time(),
-            'message': b64encode(message),
+            'message': message.encode('ascii'),
             'proof': proof,
             'prev_hash': prev_hash,
-            'signature': cipher.sign(self.hash(b64encode(message)))
+            'signature': self.cipher.sign(self.hash(message))
         }
         self.chain.append(block)
 
@@ -124,7 +126,7 @@ class BlockChain:
 
         return False
 
-    def valid_chain(self, chain):
+    def validChain(self, chain):
         """
         validates a new blockchain in 2 ways:
         for each block (beyond the first)
@@ -141,20 +143,27 @@ class BlockChain:
             print('\n-=-=-=-=-=-=-\n')
 
             # checking hash
-            try:
-                ver = pkcs1_15.PKCS115_SigScheme(block['pubkey'])
-                last_block_hash = ver.verify(self.hash(last_block))
-            except: 
+            if (not validBLock(block, last_block)):
                 return False
-            if (block['prevHash'] != last_block_hash):
-                return False
-
-            # checking the proofs are valid
-            if (not self.validProof(last_block['proof'], block['proof'], last_block_hash)):
-                return False
-
-            last_block = block
         return True
+
+    def validBlock(self, block, prevBlock):
+        # checking that the validated message signature matches the hash of the message
+        try:
+            pubCipher = pkcs1_15.PKCS115_SigScheme(block['pubkey'])
+            if (not (pubCipher.verify(block['signature']) == self.hash(block['message']))):
+                return False
+        except:
+            return False
+
+        #checking that the previous hash matches
+        last_block_hash = ver.verify(self.hash(last_block))
+        if (block['prevHash'] != last_block_hash):
+            return False
+
+        # checking the proofs are valid
+        if (not self.validProof(last_block['proof'], block['proof'], last_block_hash)):
+            return False
     
     @staticmethod
     def validProof(lastProof, proof, lastHash):
@@ -167,7 +176,6 @@ class BlockChain:
         guess = f'{lastProof}{proof}{lastHash}'.encode()
         guessHash = SHA1.new(guess).hexdigest()
         return guessHash[:4] == "0000"
-
 
     def proof_of_work(self, lastBlock):
         """
@@ -193,4 +201,4 @@ class BlockChain:
         :return: <:class: SHA256Hash> the hash of the message
         """
         block_str = json.dumps(block, sort_keys=True)
-        return SHA256.new(block_str)
+        return SHA256.new(block_str.encode('ascii'))
