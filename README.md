@@ -18,10 +18,13 @@ Given an array of nodes, each has a copy of the "blockchain." If there is a new 
 I intend to mainly use this for my own research and just mess around with the idea of how one would create a blockchain network, and thus, create an anonomous message board using blockchain technology.
 
 ## How do I intnend to do this?
+### Django site:
+A website can designate a particular directory on their site to use as a chatroom node (including just the node as a site) and anybody looking to connect can open up another directory /asdf (note, asdf can be whatever they want so long as it is unique (I think, I'm working on it)) Joining a node and giving it the node of another network will allow it to join the network, update its database of other users, and in addition, add itself to other databases. (Note, it will either collect or generate a private key and public key for each user)
+
 ### Per node
 A node will be implimented using a django interface, html, css and javascript. The backend will be made using python3.9 
-- To join a network, a node will send a GET request to /node/join/ (configure a firewall if you want to host anything public - look it up, and then don't host anything public). 
-- If a node creates a new blockchain it will send a POST request to /node/request with the public key and network id as addons
+- To join a network, a node will send a GET request to /user/join/ (configure a firewall if you want to host anything public - look it up, and then don't host anything public). 
+- If a node creates a new blockchain it will send a POST request to /user/request with the public key and network id as addons
 - If a node wants to get a blockchain from a node, it'll send a GET request to /node/request.
 
 ### Per block
