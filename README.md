@@ -19,7 +19,10 @@ I intend to mainly use this for my own research and just mess around with the id
 
 ## How do I intnend to do this?
 ### Per node
-A node will have 2 threads. One will listen for updates to the blockchain, and the other will send out updates. Note, to join the network, the new node will message an existing node with its public key, and that node will send out its node_struct, and each existing node will update their hash-maps, and the accepting node will send its hashmap of nodes in return. A blockchain update can come in two forms. 1. a status update (where the node shares a new / change to it's status or a new member joining) or 2. a normal message. A node will store all of the member hashmap, and if a node needs to update its information, it will do so by sending a leaving message and then joining using the new information. This will allow all nodes to erase its information from their banks, and then re-add it.
+A node will be implimented using a django interface, html, css and javascript. The backend will be made using python3.9 
+- To join a network, a node will send a GET request to /node/join/ (configure a firewall if you want to host anything public - look it up, and then don't host anything public). 
+- If a node creates a new blockchain it will send a POST request to /node/request with the public key and network id as addons
+- If a node wants to get a blockchain from a node, it'll send a GET request to /node/request.
 
 ### Per block
 Each block as above will have data (either a message or a new / updated member hasmap entry) encrypted using its public key
