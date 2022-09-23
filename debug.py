@@ -15,6 +15,6 @@ blockChain2 = BlockChain.BlockChain()
 
 
 
-blockchain1.new_block("Block 1!")
+blockChain1.new_block("Block 1!")
 
 print(f"{blockChain2.validChain(blockChain1.getChain())}")
