@@ -1,15 +1,15 @@
 # Blockchain Message Board
 ## How does a Blockchain work?
 First we have to understand a few things:
-1. A hash: Pretty much a "signature" of a bitstring. Each bitstring has it's own hash, and vice versa.
-  a. A signed hash: if a hash starts with 4 leading 0's (this is manipulated by a number called a nonce)
+1. A hash: Pretty much a "signature" of a bitstring. Each bitstring has it's own hash, and vice versa.   
+  a. A signed hash: if a hash starts with 4 leading 0's (this is manipulated by a number called a nonce)   
 2. Pub/priv key encryption: Each public / private key can encrypt a message sent by the other. In this case, we're encrypting using the private key so that others can validate the message using our public key. (Never give out your private key)
-3. What is a block: A block is a Object / data type and for each block, it has 4 things.
-  a. data - whatever we're sending (and encrypting using our private key)
-  b. previous hash - the hash of the previous block in the sequence
-  c. hash - the hash of this block (data, previous block, and nonce)
-  d. nonce - the "number used only once." It's job is to ensure that the hash starts with 4 leading 0's.
-(note, each user will have an array of public keys linked to a network address)
+3. What is a block: A block is a Object / data type and for each block, it has 4 things.   
+  a. data - whatever we're sending (and encrypting using our private key)   
+  b. previous hash - the hash of the previous block in the sequence   
+  c. hash - the hash of this block (data, previous block, and nonce)   
+  d. nonce - the "number used only once." It's job is to ensure that the hash starts with 4 leading 0's.   
+(note, each user will have an array of public keys linked to a network address)   
 
 ## How does this work?
 Given an array of nodes, each has a copy of the "blockchain." If there is a new hash posted, then each node checks it against its own chain. If the new nodes are signed and the hashes of the previous node match the hashes it has, it accepts it as valid. Next when you read it, you can only decrypt it with the public key if the sender decrypted it with their private key.
