@@ -19,11 +19,10 @@ I intend to mainly use this for my own research and just mess around with the id
 
 ## How do I intnend to do this?
 ### Per node
-A node will have 2 threads. One will listen for updates to the blockchain, and the other will send out updates. Note, to join the network, the new node will message an existing node with its public key, and that node will send out its node_struct, and each existing node will update their hash-maps, and the accepting node will send its hashmap of nodes in return.
-A blockchain update can come in two forms. 1. a status update (where the node shares a new / change to it's status or a new member joining) or 2. a normal message.
+A node will have 2 threads. One will listen for updates to the blockchain, and the other will send out updates. Note, to join the network, the new node will message an existing node with its public key, and that node will send out its node_struct, and each existing node will update their hash-maps, and the accepting node will send its hashmap of nodes in return. A blockchain update can come in two forms. 1. a status update (where the node shares a new / change to it's status or a new member joining) or 2. a normal message. A node will store all of the member hashmap, and if a node needs to update its information, it will do so by sending a leaving message and then joining using the new information. This will allow all nodes to erase its information from their banks, and then re-add it.
 
 ### Per block
-Each block as above will have data (either a message or a new / updated node struct) - encrypted using its public key
+Each block as above will have data (either a message or a new / updated member hasmap entry) encrypted using its public key
 A timestamp (this will be a messaging app, it would make sense to have a time for each message)
 A nonce (to modify the hash)
 a previous hash (to link it to the blockchain)
@@ -32,4 +31,4 @@ and a signed hash of all of the previous information (signed = four leading 0's)
 ## member struct:
 pretty much a member struct is just a way to transfer a new hashmap entry linking the network address of a node to its public key. It's not massive.
 
-(Note, I don't have enough practical knowledge to debate the ethics of this technology, I simply know enough to know that it's a bit of a sore subject)
+(Note, I don't have enough practical knowledge to debate the ethics of this technology, I simply know enough to know that it's a bit of a sore subject for some people, but has real application (:D) for this and other uses).
