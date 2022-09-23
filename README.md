@@ -1,4 +1,4 @@
-# blockchain-messageBoard
+# Blockchain Message Board
 ## How does a blochchain work?
 First we have to understand a few things:
 1. A hash: Pretty much a "signature" of a bit of text. Each bit of text has it's own hash, and vice versa.
