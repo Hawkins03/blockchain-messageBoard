@@ -1,5 +1,5 @@
 # Blockchain Message Board
-## How does a blochchain work?
+## How does a Blockchain work?
 First we have to understand a few things:
 1. A hash: Pretty much a "signature" of a bit of text. Each bit of text has it's own hash, and vice versa.
   a. A signed hash: if a hash starts with 4 leading 0's (this is manipulated by a number called a nonce)
