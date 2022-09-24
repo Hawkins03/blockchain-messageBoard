@@ -1,28 +1,85 @@
-import os
-import socket
+import Flask
 import django
-import Crypto
-from Crypto import PublicKey, RSA
-from Crypto.Hash import SHA
-from Crypto.Cipher import PKCS1_v1_5
-from base64 import b64decode, b64encode
+import requests
+from flask import jsonify, request
+from uuid import uuid4
+from Crypto.PublicKey import RSA
+from Crypto.Hash import SHA256
+from Crypto.Signature import pkcs1_15
 
 import BlockChain
-def generate(self):
-        key = RSA.generate(2048)
-        f = open(directory + 'key.pem', 'w')
-        f.write(key.exportKey('PEM'))
-        self.cipher = PKCS1_v1_5.new(key)
 
-def importKey(self, key_str):
-    if (not (isinstance(key_str, str))):
-        return False
-    keyDER = b64decode(key_str)
-    self.cipher = PKCS1_v1_5.new(pubDER)
-    return True
+app = Flask(__name__)
 
-def importPubKey(self, file):
-    if (not (isinstance(file, str))):
-        return False
-    self.pubKey = RSA.importKey(open(file).read())
-    return True
+node_identifier = str(uuid4()).replace('-', '')
+
+path = "/"
+blockChain = BlockChain()
+cipher = pkcs1_15.PKCS115_SigSchech(RSA.generate(2048))
+
+
+@app.route(f"{path}/messages/new", methods=['POST'])
+def new_message():
+    values = request.get_json()
+
+    if (not 'message' in values):
+        return 'missing value', 400
+    
+    index = BlockChain.new_block()
+    response = {'message': f'message will be added to Block {index}'}
+
+    return jsonify(response), 201
+
+@app.route(f"{path}/key/new", methods=['POST'])
+def use_key():
+    values = request.get_json()
+
+    if (not 'key' in values):
+        return 'missing_value', 400
+    
+    response = {'message': f'key updated'}
+
+    return jsonify(response), 201
+
+@app.route(f"{path}/chain", methods=['GET'])
+def get_chain(self):
+    response = {
+        'chain': self.blockChain.chain,
+        'length': len(self.blockChain.chain)
+    }
+    return jsonfiy(response), 200
+
+@app.route(f"{path}/nodes/register", methods=['GET'])
+def register_nodes():
+    values = request.get_json()
+
+    nodes = values.get('nodes')
+    if (nodes is None):
+        return 'Error: please supply a list of nodes', '400'
+
+    for node in nodes:
+        blockChain.register_node(nodes)
+    
+    response = {
+        'message': 'Node(s) have been registered',
+        'total_noeds': list(blockChain.nodes),
+    }
+
+    return jsonify(response), 201
+
+@app.route('/nodes/resolve', methods=['GET'])
+def consensus():
+    replaced = blockchain.resolve_conflicts()
+
+    if replaced:
+        response = {
+            'message': 'Our chain was replaced',
+            'new_chain': blockchain.chain
+        }
+    else:
+        response = {
+            'message': 'Our chain is authoritative',
+            'chain': blockchain.chain
+        }
+
+    return jsonify(response), 200

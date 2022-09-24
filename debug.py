@@ -13,8 +13,6 @@ print("Start!")
 blockChain1 = BlockChain.BlockChain()
 blockChain2 = BlockChain.BlockChain()
 
-
-
 blockChain1.new_block("Block 1!")
 
-print(f"{blockChain2.validChain(blockChain1.getChain())}")
+print(f"{blockChain2.validChain(blockChain1.chain)}")

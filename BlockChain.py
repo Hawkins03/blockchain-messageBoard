@@ -1,6 +1,7 @@
 import json
 import Crypto
 import requests
+import flask
 from time import time
 from base64 import b64decode, b64encode
 from urllib.parse import urlparse
@@ -29,9 +30,13 @@ class BlockChain:
         self.nodes = set()
 
         self.new_block("", proof=100, prev_hash='1')
+    
+    @parameter
+    def lastBlock():
+        return self.chain[-1]
 
-    def getChain(self):
-        return self.chain
+    def useKey(self, key):
+        self.cipher = pkcs1_15.PKCS115_SigScheme(key)
 
     def register_node(self, address, pubkey):
         """
@@ -117,7 +122,7 @@ class BlockChain:
                 if (length > max_length):
                     max_length = length
                     new_chain = chain
-        
+
         #Replace chain if a newer chain was discovered and it works out
         if ((new_chain) and (valid_chain(new_chain))):
             self.chain = new_chain
