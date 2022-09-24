@@ -1,21 +1,23 @@
-import Flask
-import django
 import requests
-from flask import jsonify, request
+from flask import Flask, jsonify, request, render_template
 from uuid import uuid4
 from Crypto.PublicKey import RSA
 from Crypto.Hash import SHA256
 from Crypto.Signature import pkcs1_15
 
-import BlockChain
+from BlockChain import BlockChain
 
 app = Flask(__name__)
 
 node_identifier = str(uuid4()).replace('-', '')
 
-path = "/"
+path = ""
 blockChain = BlockChain()
-cipher = pkcs1_15.PKCS115_SigSchech(RSA.generate(2048))
+cipher = pkcs1_15.PKCS115_SigScheme(RSA.generate(2048))
+
+@app.route(f"{path}/", methods=['GET'])
+def index():
+    return render_template("index.html")
 
 
 @app.route(f"{path}/messages/new", methods=['POST'])
@@ -42,12 +44,12 @@ def use_key():
     return jsonify(response), 201
 
 @app.route(f"{path}/chain", methods=['GET'])
-def get_chain(self):
+def get_chain():
     response = {
-        'chain': self.blockChain.chain,
-        'length': len(self.blockChain.chain)
+        'chain': blockChain.chain,
+        'length': len(blockChain.chain),
     }
-    return jsonfiy(response), 200
+    return jsonify(response), 200
 
 @app.route(f"{path}/nodes/register", methods=['GET'])
 def register_nodes():
@@ -83,3 +85,6 @@ def consensus():
         }
 
     return jsonify(response), 200
+
+if __name__ == "__main__":
+    app.run()

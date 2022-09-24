@@ -31,7 +31,6 @@ class BlockChain:
 
         self.new_block("", proof=100, prev_hash='1')
     
-    @parameter
     def lastBlock():
         return self.chain[-1]
 
