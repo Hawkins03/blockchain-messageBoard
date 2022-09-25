@@ -68,13 +68,13 @@ class BlockChain:
         if (not prev_hash):
             prev_hash = self.hash(self.chain[-1])
         block = {
-            'pubkey': self.pubkey,
+            #'pubkey': self.pubkey.export_key(),
             'index': len(self.chain) + 1,
             'timestamp': time(),
-            'message': message.encode('ascii'),
+            'message': message,
             'proof': proof,
             'prev_hash': prev_hash,
-            'signature': self.cipher.sign(self.hash(message))
+            #'signature': (str) (self.cipher.sign(self.hash(message)))
         }
         self.chain.append(block)
 
@@ -203,4 +203,4 @@ class BlockChain:
         :param block: <dict> the block to collect a hash for
         :return: <:class: SHA256Hash> the hash of the message
         """
-        return SHA256.new(f"{block}".encode('ascii'))
+        return SHA256.new(f"{block}".encode('utf-8'))

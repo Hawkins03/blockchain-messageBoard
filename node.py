@@ -15,7 +15,7 @@ path = ""
 blockChain = BlockChain()
 cipher = pkcs1_15.PKCS115_SigScheme(RSA.generate(2048))
 
-@app.route(f"{path}/", methods=['GET'])
+@app.route(f"/", methods=['GET'])
 def index():
     return render_template("index.html")
 
@@ -46,7 +46,7 @@ def use_key():
 @app.route(f"{path}/chain", methods=['GET'])
 def get_chain():
     response = {
-        'chain': blockChain.chain,
+        'chain': (blockChain.chain),
         'length': len(blockChain.chain),
     }
     return jsonify(response), 200
@@ -71,17 +71,22 @@ def register_nodes():
 
 @app.route('/nodes/resolve', methods=['GET'])
 def consensus():
-    replaced = blockchain.resolve_conflicts()
+    replaced = blockChain.resolve_conflicts()
+
+    chain=[]
+    for block in blockChain.chain:
+        chain.append(block)
+
 
     if replaced:
         response = {
             'message': 'Our chain was replaced',
-            'new_chain': blockchain.chain
+            'new_chain': chain
         }
     else:
         response = {
             'message': 'Our chain is authoritative',
-            'chain': blockchain.chain
+            'chain': chain
         }
 
     return jsonify(response), 200
