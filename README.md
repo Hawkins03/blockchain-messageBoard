@@ -38,3 +38,8 @@ and a signed hash of all of the previous information (signed = four leading 0's)
 pretty much a member struct is just a way to transfer a new hashmap entry linking the network address of a node to its public key. It's not massive.
 
 (Note, I don't have enough practical knowledge to debate the ethics of this technology, I simply know enough to know that it's a bit of a sore subject for some people, but has real application (:D) for this and other uses).
+
+## TODO
+change nodes into a list of dictionaries, (username (unique), public key, ip). This allows hubs to distinguish who's on what network and what network id, and it allows only the username to be sent with each block.
+
+In addition, every 24 hours each node will reset and store the logs of the message before rebooting. (This will stop the lists from being massive)
