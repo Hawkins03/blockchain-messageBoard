@@ -74,7 +74,7 @@ class BlockChain:
             'message': message,
             'proof': proof,
             'prev_hash': prev_hash,
-            #'signature': (str) (self.cipher.sign(self.hash(message)))
+            'signature': b64encode((self.cipher.sign(self.hash(message)))) # DECODE ON OTHER END!
         }
         self.chain.append(block)
 
@@ -153,7 +153,7 @@ class BlockChain:
     def validBlock(self, block, prevBlock):
         # checking that the validated message signature matches the hash of the message
         try:
-            pubCipher = pkcs1_15.PKCS115_SigScheme(block['pubkey'])
+            pubCipher = pkcs1_15.PKCS115_SigScheme(b64decode(block['pubkey']))
             if (not (pubCipher.verify(block['signature']) == self.hash(block['message']))):
                 return False
         except:
