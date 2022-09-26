@@ -69,7 +69,7 @@ def register_nodes():
 
     return jsonify(response), 201
 
-@app.route('/nodes/resolve', methods=['GET'])
+@app.route(f'{path}/nodes/resolve', methods=['GET'])
 def consensus():
     replaced = blockChain.resolve_conflicts()
 

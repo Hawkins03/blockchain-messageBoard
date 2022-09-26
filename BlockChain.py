@@ -68,14 +68,16 @@ class BlockChain:
         if (not prev_hash):
             prev_hash = self.hash(self.chain[-1])
         block = {
-            #'pubkey': self.pubkey.export_key(),
-            'index': len(self.chain) + 1,
-            'timestamp': time(),
-            'message': message,
-            'proof': proof,
-            'prev_hash': prev_hash,
-            'signature': b64encode((self.cipher.sign(self.hash(message)))) # DECODE ON OTHER END!
+            'pubkey': self.pubkey.export_key(format='PEM').decode('utf-8'),
+            'index': len(self.chain) + 1, #int
+            'timestamp': time(), #float
+            'message': message, #str
+           'proof': proof, #int
+            'prev_hash': prev_hash, #str
+            'signature': self.cipher.sign(self.hash(message)) # DECODE ON OTHER END!
         }
+        block['signature']=b64encode(block['signature']).decode('ascii')
+        block['pubkey']
         self.chain.append(block)
 
         #push to all nodes : f"https://{node}/update"
@@ -153,7 +155,7 @@ class BlockChain:
     def validBlock(self, block, prevBlock):
         # checking that the validated message signature matches the hash of the message
         try:
-            pubCipher = pkcs1_15.PKCS115_SigScheme(b64decode(block['pubkey']))
+            pubCipher = pkcs1_15.PKCS115_SigScheme(block['pubkey'])
             if (not (pubCipher.verify(block['signature']) == self.hash(block['message']))):
                 return False
         except:
