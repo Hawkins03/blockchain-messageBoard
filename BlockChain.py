@@ -155,9 +155,8 @@ class BlockChain:
     def validBlock(self, block, prevBlock):
         # checking that the validated message signature matches the hash of the message
         try:
-            pubCipher = pkcs1_15.PKCS115_SigScheme(block['pubkey'])
-            if (not (pubCipher.verify(block['signature']) == self.hash(block['message']))):
-                return False
+            pubCipher = pkcs1_15.PKCS115_SigScheme(RSA.import_key(block['pubkey']))
+            pubCipher.verify(self.hash(block[message]), block['signature'])
         except:
             return False
 
