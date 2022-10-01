@@ -5,9 +5,19 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
+    <script src="{{ url_for('static', filename='javascript/main.js')}}"> </script>
     {% block head %}{% endblock %}
 </head>
 <body>
-    {% block body %}{% endblock %}
+    <header>
+
+        <img href="{{ logo }}">
+        <div class="vline"></div>
+        <h1 id="Brand" class="headerTxt">Priv</h1>
+        <p id="Catchphrase">Your data's not our business</p>
+    </header>
+    {% block body %}{%endblock %}
+    <footer>
+    </footer>
 </body>
 </html>

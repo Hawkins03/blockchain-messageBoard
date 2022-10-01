@@ -5,5 +5,8 @@
 {% endblock %}
 
 {% block body %}
-<h1 class="title"> Welcome to the fully anonamous chat board </h1>
+    <canvas id="canvas"></canvas>
+    <script src="{{url_for('static', filename='javascript/canvas.js')}}"></script>
+
+    <h1 class="title"> Welcome to the fully anonamous chat board </h1>
 {% endblock %}

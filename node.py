@@ -17,7 +17,8 @@ cipher = pkcs1_15.PKCS115_SigScheme(RSA.generate(2048))
 
 @app.route(f"{path}/", methods=['GET'])
 def index():
-    return render_template("index.html")
+    logo = 'static/Logo.svg'
+    return render_template("index.html", logo = logo)
 
 
 @app.route(f"{path}/key/new", methods=['POST'])
