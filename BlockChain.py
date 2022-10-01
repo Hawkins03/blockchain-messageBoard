@@ -6,7 +6,7 @@ from time import time
 from base64 import b64decode, b64encode
 from urllib.parse import urlparse
 from Crypto.PublicKey import RSA
-from Crypto.Hash import SHA256
+from Crypto.Hash import SHA256, SHA1
 from Crypto.Signature import pkcs1_15
 
 '''
@@ -15,10 +15,13 @@ note, quite a bit of this class took inspiration from https://github.com/dvf/blo
 '''
 
 class BlockChain:
-    def __init__(self, key = RSA.generate(2048)):
+    def __init__(self, username, net_passwd = 'Stuff and Things', netid = 1, key = RSA.generate(2048),):
         """
         :param privKey: <Crypto.Pubkey.RSA> the keypair you're using to sign / encrypt data.
-
+        :param netid: <int> the network id you're using. (note, this will change to be a random number I'll generate somehow later)
+        
+        Link username to public key hash. (key hash = user_id)
+        If a username matches a previous username, then have to 
         """
 
         self.cipher = pkcs1_15.PKCS115_SigScheme(key)
@@ -28,28 +31,42 @@ class BlockChain:
         self.pubkey = key.public_key()
         self.chain = []
         self.nodes = set()
+        self.netid = netid
+        self.user_id = SHA1.new(b64encode(self.pubkey.export_key())).hexdigest()
+        self.username = username
 
         self.new_block("", proof=100, prev_hash='1')
     
-    def lastBlock():
+    def lastBlock(self):
         return self.chain[-1]
 
-    def useKey(self, key):
-        self.cipher = pkcs1_15.PKCS115_SigScheme(key)
+    def netid(self):
+        return self.netid
 
-    def register_node(self, address, pubkey):
+    def key(self, key):
+        self.cipher = pkcs1_15.PKCS115_SigScheme(key)
+        self.pubkey = key.pubkey
+        self.user_id = SHA1.new(pubkey.export_key()).hexdigest()
+
+    def register_node(self, address, username, pubkey, signature):
         """
         add a new node to send and recive things from
         :param address: <str> a valid address to another node (i.e. https://10.0.0.1:8000/user1)
         :param pubkey: a valid public key to use to decrypt the message inside (validation purposes)
         """
         parsedUrl = urlparse(address)
+        message_hash = SHA256.new(self.passwd).encode('utf-8') 
+        try:
+            pubCipher = pkcs1_15.PKCS115_SigScheme(pubkey)
+            pubCipher.verify(message_hash, signature)
+        except ValueError:
+            return False
         if (parsedUrl.netloc):
             # regular website thingey
-            self.nodes.add(parsedUrl.netloc)
+            self.nodes.add({'address': parsedUrl.netloc, 'user': username, 'pubkey':pubkey})
         elif (parsedUrl.path):
             # for an ip address w/ path
-            self.nodes.add(parsedUrl.path)
+            self.nodes.add({'address': parsedUrl.path, 'user': username, 'pubkey':pubkey})
         else:
             raise ValueError('Invalid URL')
         return
@@ -68,16 +85,17 @@ class BlockChain:
         if (not prev_hash):
             prev_hash = self.hash(self.chain[-1])
         block = {
-            'pubkey': self.pubkey.export_key(format='PEM').decode('utf-8'),
+            'user-id': self.user_id,
+            'pubkey': self.pubkey.export_key('OpenSSH').decode('UTF-8'), 
             'index': len(self.chain) + 1, #int
             'timestamp': time(), #float
             'message': message, #str
            'proof': proof, #int
             'prev_hash': prev_hash, #str
-            'signature': self.cipher.sign(self.hash(message)) # DECODE ON OTHER END!
+            'signature': self.cipher.sign(self.hash(message.encode('utf-8')))
         }
         block['signature']=b64encode(block['signature']).decode('ascii')
-        block['pubkey']
+        #block['pubkey'] = b64encode(block['pubkey']).decode('ascii')
         self.chain.append(block)
 
         #push to all nodes : f"https://{node}/update"
@@ -114,7 +132,8 @@ class BlockChain:
 
         #find largest node
         for node in neighbors:
-            response = request.get(f"https://{node}/chain")
+            address = node['address']
+            response = request.get(f"https://{address}/chain")
 
             if (response.status_code == 200):
                 length = response.json()['length']
@@ -156,7 +175,7 @@ class BlockChain:
         # checking that the validated message signature matches the hash of the message
         try:
             pubCipher = pkcs1_15.PKCS115_SigScheme(RSA.import_key(block['pubkey']))
-            pubCipher.verify(self.hash(block[message]), block['signature'])
+            pubCipher.verify(self.hash(block['message']), block['signature'])
         except:
             return False
 

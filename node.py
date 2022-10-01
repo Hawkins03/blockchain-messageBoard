@@ -2,7 +2,7 @@ import requests
 from flask import Flask, jsonify, request, render_template
 from uuid import uuid4
 from Crypto.PublicKey import RSA
-from Crypto.Hash import SHA256
+from Crypto.Hash import SHA256, SHA1
 from Crypto.Signature import pkcs1_15
 
 from BlockChain import BlockChain
@@ -12,25 +12,13 @@ app = Flask(__name__)
 node_identifier = str(uuid4()).replace('-', '')
 
 path = ""
-blockChain = BlockChain()
+blockChain = BlockChain('user')
 cipher = pkcs1_15.PKCS115_SigScheme(RSA.generate(2048))
 
-@app.route(f"/", methods=['GET'])
+@app.route(f"{path}/", methods=['GET'])
 def index():
     return render_template("index.html")
 
-
-@app.route(f"{path}/messages/new", methods=['POST'])
-def new_message():
-    values = request.get_json()
-
-    if (not 'message' in values):
-        return 'missing value', 400
-    
-    index = BlockChain.new_block()
-    response = {'message': f'message will be added to Block {index}'}
-
-    return jsonify(response), 201
 
 @app.route(f"{path}/key/new", methods=['POST'])
 def use_key():
@@ -51,16 +39,19 @@ def get_chain():
     }
     return jsonify(response), 200
 
-@app.route(f"{path}/nodes/register", methods=['GET'])
+@app.route(f"{path}/nodes/register", methods=['PUT'])
 def register_nodes():
     values = request.get_json()
+
+    if (values.get('netid') != blockChain.netid()):
+        return 'Error: submitting to wrong network', '400'
 
     nodes = values.get('nodes')
     if (nodes is None):
         return 'Error: please supply a list of nodes', '400'
 
     for node in nodes:
-        blockChain.register_node(nodes)
+        blockChain.register_node(node)
     
     response = {
         'message': 'Node(s) have been registered',
@@ -80,11 +71,13 @@ def consensus():
 
     if replaced:
         response = {
+            'netid': blockChain.netid,
             'message': 'Our chain was replaced',
             'new_chain': chain
         }
     else:
         response = {
+            'netid': blockChain.netid,
             'message': 'Our chain is authoritative',
             'chain': chain
         }
