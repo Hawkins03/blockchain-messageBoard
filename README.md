@@ -1,3 +1,8 @@
+# NOTE!! THIS IS UNDER DEVELOPMENT AND IS NOT CURRENTLY ACCURATE
+
+
+
+
 # Blockchain Message Board
 ## How does a Blockchain work?
 First we have to understand a few things:
